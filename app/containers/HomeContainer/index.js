@@ -16,7 +16,6 @@ import { useInjectSaga } from 'utils/injectSaga';
 import { selectHomeContainer, selectReposData, selectReposError, selectRepoName } from './selectors';
 import { homeContainerCreators } from './reducer';
 import saga from './saga';
-import 'react-h5-audio-player/lib/styles.css';
 import Audio from './Audio'
 
 const { Search } = Input;
