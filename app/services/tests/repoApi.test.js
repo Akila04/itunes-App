@@ -3,16 +3,16 @@ import { getApiClient } from '@utils/apiUtils';
 import { getRepos } from '../repoApi';
 
 describe('RepoApi tests', () => {
-  const repositoryName = 'mac';
-  it('should make the api call to "/search/repositories?q="', async () => {
+  const repositoryName = 'chitr';
+  it('should make the api call to "/search?term="', async () => {
     const mock = new MockAdapter(getApiClient().axiosInstance);
     const data = [
       {
-        totalCount: 1,
-        items: [{ repositoryName }]
+        resultCount: 5,
+        //results: [{ repositoryName }]
       }
     ];
-    mock.onGet(`/search/repositories?q=${repositoryName}`).reply(200, data);
+    mock.onGet(`/search?term=${repositoryName}`).reply(200, data);
     const res = await getRepos(repositoryName);
     expect(res.data).toEqual(data);
   });

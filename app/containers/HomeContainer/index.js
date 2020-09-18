@@ -16,6 +16,8 @@ import { useInjectSaga } from 'utils/injectSaga';
 import { selectHomeContainer, selectReposData, selectReposError, selectRepoName } from './selectors';
 import { homeContainerCreators } from './reducer';
 import saga from './saga';
+import 'react-h5-audio-player/lib/styles.css';
+import Audio from './Audio'
 
 const { Search } = Input;
 
@@ -51,17 +53,21 @@ export function HomeContainer({
   maxwidth,
   padding
 }) {
+  
+  
   useInjectSaga({ key: 'homeContainer', saga });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const loaded = get(reposData, 'items', null) || reposError;
+    const loaded = get(reposData, 'results', null) || reposError;
+  
     if (loading && loaded) {
       setLoading(false);
     }
   }, [reposData]);
 
   useEffect(() => {
+    
     if (repoName && !reposData?.items?.length) {
       dispatchGithubRepos(repoName);
       setLoading(true);
@@ -71,6 +77,7 @@ export function HomeContainer({
   const history = useHistory();
 
   const handleOnChange = rName => {
+    
     if (!isEmpty(rName)) {
       dispatchGithubRepos(rName);
       setLoading(true);
@@ -81,8 +88,9 @@ export function HomeContainer({
   const debouncedHandleOnChange = debounce(handleOnChange, 200);
 
   const renderRepoList = () => {
-    const items = get(reposData, 'items', []);
-    const totalCount = get(reposData, 'totalCount', 0);
+    
+    const items = get(reposData, 'results', []);
+    const totalCount = get(reposData, 'resultCount', 0);
     return (
       (items.length !== 0 || loading) && (
         <CustomCard>
@@ -94,14 +102,17 @@ export function HomeContainer({
             )}
             {totalCount !== 0 && (
               <div>
-                <T id="matching_repos" values={{ totalCount }} />
+                <T id="matching_songs" values={{ totalCount }} />
               </div>
             )}
             {items.map((item, index) => (
               <CustomCard key={index}>
-                <T id="repository_name" values={{ name: item.name }} />
-                <T id="repository_full_name" values={{ fullName: item.fullName }} />
-                <T id="repository_stars" values={{ stars: item.stargazersCount }} />
+
+                <T id="artist_name" values={{ artistName: item.artistName }} />
+                <T id="track_name" values={{ trackName: item.trackName }} />
+                <T id="collection_name" values={{ collectionName: item.collectionName }} />
+                <Audio previewUrl={item.previewUrl} />
+                
               </CustomCard>
             ))}
           </Skeleton>
@@ -110,6 +121,7 @@ export function HomeContainer({
     );
   };
   const renderErrorState = () => {
+    
     let repoError;
     if (reposError) {
       repoError = reposError;
@@ -119,13 +131,14 @@ export function HomeContainer({
     return (
       !loading &&
       repoError && (
-        <CustomCard color={reposError ? 'red' : 'grey'} title={intl.formatMessage({ id: 'repo_list' })}>
+        <CustomCard color={reposError ? 'red' : 'grey'} title={intl.formatMessage({ id: 'songs_list' })}>
           <T id={repoError} />
         </CustomCard>
       )
     );
   };
   const refreshPage = () => {
+    
     history.push('stories');
     window.location.reload();
   };
@@ -134,8 +147,8 @@ export function HomeContainer({
       <RightContent>
         <Clickable textId="stories" onClick={refreshPage} />
       </RightContent>
-      <CustomCard title={intl.formatMessage({ id: 'repo_search' })} maxwidth={maxwidth}>
-        <T marginBottom={10} id="get_repo_details" />
+      <CustomCard title={intl.formatMessage({ id: 'artist_search' })} maxwidth={maxwidth}>
+        <T marginBottom={10} id="get_artist_details" />
         <Search
           data-testid="search-bar"
           defaultValue={repoName}
@@ -177,6 +190,7 @@ const mapStateToProps = createStructuredSelector({
   reposError: selectReposError(),
   repoName: selectRepoName()
 });
+
 
 function mapDispatchToProps(dispatch) {
   const { requestGetGithubRepos, clearGithubRepos } = homeContainerCreators;
